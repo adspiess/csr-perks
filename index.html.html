@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CSR Perks">
+  <meta name="theme-color" content="#050a14">
+  <title>CSR Perks</title>
+
+  <!-- App icon via SVG data URI for home screen -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMDUwYTE0Ii8+PHJlY3QgeD0iMjAiIHk9IjU1IiB3aWR0aD0iMTQwIiBoZWlnaHQ9IjkwIiByeD0iMTIiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzFhNDU4MCIgc3Ryb2tlLXdpZHRoPSIyIi8+PHJlY3QgeD0iMjAiIHk9IjU1IiB3aWR0aD0iMTQwIiBoZWlnaHQ9IjMwIiByeD0iMTIiIGZpbGw9IiMxYTQ1ODAiLz48cmVjdCB4PSIyMCIgeT0iNzUiIHdpZHRoPSIxNDAiIGhlaWdodD0iMTAiIGZpbGw9IiMxYTQ1ODAiLz48cmVjdCB4PSIzNSIgeT0iMTA1IiB3aWR0aD0iMzAiIGhlaWdodD0iMjAiIHJ4PSI0IiBmaWxsPSIjMzg4NGY1Ii8+PHRleHQgeD0iOTAiIHk9IjE2NSIgZm9udC1mYW1pbHk9InNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjY4OGFhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TQVBQSElSRTwvdGV4dD48L3N2Zz4=">
+
+  <style>
+    :root {
+      --bg: #050a14;
+      --surface: #0c1526;
+      --surface2: #111f35;
+      --border: #1a2d4a;
+      --border-bright: #1e3a5f;
+      --text: #e2eaf5;
+      --text-muted: #4a6080;
+      --text-dim: #7a9ab8;
+      --gold: #c9a84c;
+      --gold-dim: #8a6a28;
+      --blue: #3884f5;
+      --blue-dim: #1a3a6a;
+      --green: #2ecc8a;
+      --green-dim: #0e4a30;
+      --red: #e05555;
+      --red-dim: #4a1818;
+      --amber: #e0a030;
+      --amber-dim: #4a3010;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Georgia', 'Times New Roman', serif;
+      overscroll-behavior: none;
+    }
+
+    body {
+      padding-top: calc(var(--safe-top) + 0px);
+      padding-bottom: var(--safe-bottom);
+    }
+
+    /* ── HEADER ── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(5,10,20,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px 12px;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-chip {
+      width: 42px;
+      height: 28px;
+      background: linear-gradient(135deg, #1a3a6a, #2563a8);
+      border: 1px solid #2a5090;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-chip svg { width: 28px; height: 18px; }
+
+    .header-title { flex: 1; }
+    .header-title .brand { font-size: 10px; letter-spacing: 3px; color: var(--text-muted); text-transform: uppercase; }
+    .header-title .name { font-size: 18px; color: var(--text); letter-spacing: 0.5px; }
+
+    .fee-badge {
+      text-align: right;
+    }
+    .fee-badge .label { font-size: 9px; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; font-family: monospace; }
+    .fee-badge .amount { font-size: 16px; color: var(--gold); }
+
+    /* ── SUMMARY BAR ── */
+    .summary-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .summary-stat { text-align: center; flex: 1; }
+    .summary-stat .val { font-size: 18px; color: var(--text); }
+    .summary-stat .lbl { font-size: 9px; letter-spacing: 1.5px; color: var(--text-muted); text-transform: uppercase; font-family: monospace; }
+
+    .summary-divider { width: 1px; background: var(--border); }
+
+    /* ── FILTER TABS ── */
+    .filter-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+
+    .tab {
+      flex-shrink: 0;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: monospace;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      -webkit-appearance: none;
+    }
+    .tab.active {
+      border-color: var(--blue);
+      background: rgba(56,132,245,0.1);
+      color: var(--blue);
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      padding: 16px 16px 32px;
+    }
+
+    /* ── PERK CARD ── */
+    .perk-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.15s;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .perk-card:active { transform: scale(0.985); }
+    .perk-card.urgent { border-color: rgba(224,85,85,0.3); }
+    .perk-card.used { opacity: 0.5; }
+
+    .perk-main {
+      padding: 14px 16px;
+    }
+
+    .perk-row1 {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .perk-icon {
+      font-size: 26px;
+      flex-shrink: 0;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    .perk-info { flex: 1; min-width: 0; }
+
+    .perk-name {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 3px;
+    }
+
+    .perk-value {
+      font-size: 12px;
+      font-family: monospace;
+      color: var(--blue);
+      margin-bottom: 4px;
+    }
+
+    .perk-badges {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 9px;
+      font-family: monospace;
+      letter-spacing: 0.8px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      text-transform: uppercase;
+    }
+
+    .badge-monthly  { background: rgba(56,132,245,0.12); color: #5a9cf8; border: 1px solid rgba(56,132,245,0.2); }
+    .badge-quarterly{ background: rgba(167,139,250,0.12); color: #b89af8; border: 1px solid rgba(167,139,250,0.2); }
+    .badge-annual   { background: rgba(46,204,138,0.12); color: #3edda0; border: 1px solid rgba(46,204,138,0.2); }
+    .badge-category { background: rgba(201,168,76,0.1);  color: var(--gold-dim); border: 1px solid rgba(201,168,76,0.15); }
+
+    .perk-right {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .days-left {
+      font-size: 14px;
+      font-family: monospace;
+      margin-bottom: 2px;
+    }
+    .days-left.urgent { color: var(--red); }
+    .days-left.warn   { color: var(--amber); }
+    .days-left.ok     { color: var(--text-dim); }
+
+    .reset-date {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      margin-top: 10px;
+      background: var(--surface2);
+      border-radius: 4px;
+      height: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    .progress-fill.urgent { background: var(--red); }
+    .progress-fill.warn   { background: var(--amber); }
+    .progress-fill.ok     { background: var(--green); }
+
+    /* ── EXPANDED PANEL ── */
+    .perk-detail {
+      display: none;
+      padding: 0 16px 14px;
+      border-top: 1px solid var(--border);
+      margin-top: 0;
+      animation: slideDown 0.2s ease;
+    }
+
+    .perk-card.expanded .perk-detail { display: block; }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .detail-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin: 12px 0 10px;
+    }
+
+    .tip-box {
+      background: rgba(56,132,245,0.06);
+      border: 1px solid rgba(56,132,245,0.15);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+    }
+
+    .tip-box span { font-size: 11px; font-family: monospace; color: var(--blue); }
+    .tip-box p { font-size: 12px; color: var(--text-dim); margin-top: 3px; line-height: 1.5; }
+
+    .detail-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .reminder-info {
+      font-size: 10px;
+      font-family: monospace;
+      color: var(--text-muted);
+    }
+
+    .btn-used {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--green);
+      background: rgba(46,204,138,0.08);
+      color: var(--green);
+      font-size: 12px;
+      font-family: monospace;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .btn-used.is-used {
+      border-color: var(--border);
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    /* ── RENEWAL BANNER ── */
+    .renewal-banner {
+      background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.04));
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .renewal-banner .icon { font-size: 20px; }
+    .renewal-banner .text { flex: 1; }
+    .renewal-banner .text .t { font-size: 13px; color: var(--gold); }
+    .renewal-banner .text .s { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-family: monospace; }
+    .renewal-banner .days-badge {
+      font-size: 11px;
+      font-family: monospace;
+      color: var(--gold);
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      font-size: 9px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-family: monospace;
+      margin: 16px 0 8px;
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 14px; }
+
+    /* ── INSTALL TOAST ── */
+    .install-toast {
+      position: fixed;
+      bottom: calc(var(--safe-bottom) + 16px);
+      left: 16px;
+      right: 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 999;
+      animation: slideUp 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .install-toast.hidden { display: none; }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+
+    .install-toast .msg { flex: 1; font-size: 13px; color: var(--text-dim); line-height: 1.4; }
+    .install-toast .msg strong { color: var(--text); display: block; margin-bottom: 2px; }
+
+    .btn-install {
+      padding: 8px 14px;
+      background: var(--blue);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+      font-family: monospace;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .btn-dismiss {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="card-chip">
+      <!-- Visa-like chip SVG -->
+      <svg viewBox="0 0 28 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="18" rx="3" fill="#0a2040"/>
+        <rect x="1" y="6" width="26" height="6" fill="#1a4080" opacity="0.6"/>
+        <rect x="5" y="4" width="8" height="10" rx="2" fill="none" stroke="#2a6abf" stroke-width="0.8"/>
+        <line x1="9" y1="4" x2="9" y2="14" stroke="#2a6abf" stroke-width="0.8"/>
+        <line x1="5" y1="9" x2="13" y2="9" stroke="#2a6abf" stroke-width="0.8"/>
+      </svg>
+    </div>
+    <div class="header-title">
+      <div class="brand">Chase</div>
+      <div class="name">Sapphire Reserve</div>
+    </div>
+    <div class="fee-badge">
+      <div class="label">Annual Fee</div>
+      <div class="amount">$795</div>
+    </div>
+  </div>
+
+  <div class="summary-bar" id="summaryBar">
+    <!-- filled by JS -->
+  </div>
+
+  <div class="filter-tabs" id="filterTabs">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<div class="content" id="content">
+  <!-- filled by JS -->
+</div>
+
+<div class="install-toast hidden" id="installToast">
+  <div class="msg">
+    <strong>Add to Home Screen</strong>
+    Tap Share → "Add to Home Screen" to install
+  </div>
+  <button class="btn-dismiss" id="toastDismiss">✕</button>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────
+const PERKS = [
+  {
+    id: 'travel_credit',
+    name: '$300 Travel Credit',
+    value: '$300 / year',
+    cycle: 'annual',
+    icon: '✈️',
+    category: 'Travel',
+    desc: 'Statement credit for any travel purchase — airlines, hotels, Uber, Lyft, tolls, parking, and transit. Applies automatically.',
+    tip: 'Use it on your very first travel charge of the year — it just appears on your statement.',
+  },
+  {
+    id: 'dining_credit',
+    name: '$10 Dining Credit',
+    value: '$10 / month',
+    cycle: 'monthly',
+    icon: '🍔',
+    category: 'Dining',
+    desc: 'Monthly $10 statement credit for Gopuff orders. Resets on the last day of each month.',
+    tip: 'Order household essentials, snacks, or drinks from Gopuff — credit applies automatically.',
+  },
+  {
+    id: 'chase_offers',
+    name: 'Chase Offers',
+    value: 'Varies',
+    cycle: 'quarterly',
+    icon: '🏷️',
+    category: 'Shopping',
+    desc: 'Rotating merchant offers added every quarter. Add them all in the Chase app to maximize savings.',
+    tip: 'Open Chase app → "Offers for you" and add every available offer at the start of each quarter.',
+  },
+  {
+    id: 'priority_pass',
+    name: 'Priority Pass Lounge Access',
+    value: 'Unlimited guests',
+    cycle: 'annual',
+    icon: '🛋️',
+    category: 'Travel',
+    desc: 'Unlimited airport lounge access worldwide for you and 2 guests via Priority Pass Select membership.',
+    tip: 'Download the Priority Pass app and activate your membership through the Chase benefits portal.',
+  },
+  {
+    id: 'lyft_pink',
+    name: 'Lyft Pink Membership',
+    value: '15% off rides',
+    cycle: 'annual',
+    icon: '🚗',
+    category: 'Travel',
+    desc: 'Complimentary Lyft Pink All Access membership — 15% off rides, priority airport pickups, and no cancellation fees.',
+    tip: 'Link your Chase Sapphire Reserve in the Lyft app under Account → Lyft Pink to activate.',
+  },
+  {
+    id: 'global_entry',
+    name: 'Global Entry / TSA PreCheck',
+    value: '$100 credit',
+    cycle: 'annual',
+    icon: '🛂',
+    category: 'Travel',
+    desc: '$100 statement credit for Global Entry application fee (every 4 years). Includes TSA PreCheck.',
+    tip: 'Apply for Global Entry — it automatically includes TSA PreCheck for domestic flights.',
+  },
+  {
+    id: 'ihg_status',
+    name: 'IHG Platinum Elite Status',
+    value: 'Elite status',
+    cycle: 'annual',
+    icon: '🏨',
+    category: 'Hotel',
+    desc: 'Complimentary IHG Platinum Elite status with room upgrades, early check-in, and 60% bonus points.',
+    tip: 'Link your IHG Rewards account in the Chase benefits portal to activate status.',
+  },
+  {
+    id: 'hertz_status',
+    name: 'Hertz President\'s Circle',
+    value: 'Elite status',
+    cycle: 'annual',
+    icon: '🚙',
+    category: 'Travel',
+    desc: 'Complimentary Hertz President\'s Circle status — top tier with free car upgrades and dedicated service.',
+    tip: 'Enroll through the Chase benefits portal under Travel Benefits.',
+  },
+  {
+    id: 'trip_insurance',
+    name: 'Trip Delay Insurance',
+    value: 'Up to $10,000',
+    cycle: 'annual',
+    icon: '🛡️',
+    category: 'Insurance',
+    desc: 'Trip delay reimbursement (up to $500/ticket after 6hr delay) and trip cancellation/interruption up to $10,000.',
+    tip: 'Always pay for flights with this card. File claims at cardbenefit.com within 60 days of incident.',
+  },
+  {
+    id: 'dashpass',
+    name: 'DashPass Membership',
+    value: 'Free delivery',
+    cycle: 'annual',
+    icon: '🛵',
+    category: 'Dining',
+    desc: 'Complimentary DoorDash DashPass — free delivery and reduced service fees on eligible orders.',
+    tip: 'Activate DashPass in the DoorDash app using your CSR card.',
+  },
+];
+
+// Renewal month (0-indexed). June = 5.
+const RENEWAL_MONTH = 5; // June
+const ANNUAL_FEE = 795;
+
+// ─────────────────────────────────────────
+// DATE HELPERS
+// ─────────────────────────────────────────
+function today() {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function lastDayOfMonth(year, month) {
+  return new Date(year, month + 1, 0);
+}
+
+function getResetDate(cycle) {
+  const now = today();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+
+  if (cycle === 'monthly') {
+    return lastDayOfMonth(y, m);
+  }
+
+  if (cycle === 'quarterly') {
+    // Quarter ends: Mar(2), Jun(5), Sep(8), Dec(11)
+    const qEnds = [2, 5, 8, 11];
+    const next = qEnds.find(q => q >= m);
+    if (next !== undefined) return lastDayOfMonth(y, next);
+    return lastDayOfMonth(y + 1, qEnds[0]);
+  }
+
+  if (cycle === 'annual') {
+    // Resets at card anniversary month
+    const resetMonth = RENEWAL_MONTH;
+    const candidate = lastDayOfMonth(y, resetMonth);
+    if (candidate > now) return candidate;
+    return lastDayOfMonth(y + 1, resetMonth);
+  }
+}
+
+function daysUntil(date) {
+  return Math.round((date - today()) / 86400000);
+}
+
+function fmtDate(date) {
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function cycleDays(cycle) {
+  return cycle === 'monthly' ? 30 : cycle === 'quarterly' ? 90 : 365;
+}
+
+function urgencyClass(days) {
+  if (days <= 7)  return 'urgent';
+  if (days <= 14) return 'warn';
+  return 'ok';
+}
+
+// ─────────────────────────────────────────
+// LOCAL STORAGE
+// ─────────────────────────────────────────
+function getUsed() {
+  try { return JSON.parse(localStorage.getItem('csr_used') || '{}'); }
+  catch { return {}; }
+}
+
+function setUsed(obj) {
+  try { localStorage.setItem('csr_used', JSON.stringify(obj)); } catch {}
+}
+
+function toggleUsed(id) {
+  const used = getUsed();
+  if (used[id]) delete used[id];
+  else used[id] = true;
+  setUsed(used);
+  render();
+}
+
+// ─────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────
+let activeFilter = 'All';
+const categories = ['All', ...new Set(PERKS.map(p => p.category))];
+let expandedId = null;
+
+// ─────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────
+function render() {
+  const used = getUsed();
+
+  // Enrich perks with live date data
+  const enriched = PERKS.map(p => {
+    const resetDate = getResetDate(p.cycle);
+    const days = daysUntil(resetDate);
+    const urg = urgencyClass(days);
+    const isUsed = !!used[p.id];
+    const totalDays = cycleDays(p.cycle);
+    const elapsed = totalDays - days;
+    const pct = Math.max(2, Math.min(98, (elapsed / totalDays) * 100));
+    return { ...p, resetDate, days, urg, isUsed, pct };
+  }).sort((a, b) => {
+    if (a.isUsed !== b.isUsed) return a.isUsed ? 1 : -1;
+    return a.days - b.days;
+  });
+
+  // Summary bar
+  const urgentCount = enriched.filter(p => p.days <= 7 && !p.isUsed).length;
+  const usedCount = Object.keys(used).length;
+  document.getElementById('summaryBar').innerHTML = `
+    <div class="summary-stat">
+      <div class="val">${enriched.length}</div>
+      <div class="lbl">Perks</div>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat">
+      <div class="val" style="color:${urgentCount ? 'var(--red)' : 'var(--text)'}">${urgentCount}</div>
+      <div class="lbl">Urgent</div>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat">
+      <div class="val" style="color:var(--green)">${usedCount}</div>
+      <div class="lbl">Used</div>
+    </div>
+  `;
+
+  // Filter tabs
+  document.getElementById('filterTabs').innerHTML = categories.map(c => `
+    <button class="tab ${c === activeFilter ? 'active' : ''}" onclick="setFilter('${c}')">${c}</button>
+  `).join('');
+
+  // Renewal banner
+  const renewalDate = getResetDate('annual');
+  const renewalDays = daysUntil(renewalDate);
+  let renewalHTML = '';
+  if (renewalDays <= 60) {
+    renewalHTML = `
+      <div class="renewal-banner">
+        <div class="icon">💳</div>
+        <div class="text">
+          <div class="t">$${ANNUAL_FEE} Annual Fee Due</div>
+          <div class="s">Renews ${fmtDate(renewalDate)}</div>
+        </div>
+        <div class="days-badge">${renewalDays}d away</div>
+      </div>
+    `;
+  }
+
+  // Filter perks
+  const filtered = enriched.filter(p => activeFilter === 'All' || p.category === activeFilter);
+  const active = filtered.filter(p => !p.isUsed);
+  const done = filtered.filter(p => p.isUsed);
+
+  let cardsHTML = '';
+
+  if (active.length === 0 && done.length === 0) {
+    cardsHTML = `<div class="empty">No perks in this category</div>`;
+  } else {
+    if (active.length) {
+      cardsHTML += active.map(p => perkCard(p, used)).join('');
+    }
+    if (done.length) {
+      cardsHTML += `<div class="section-header">Marked as Used</div>`;
+      cardsHTML += done.map(p => perkCard(p, used)).join('');
+    }
+  }
+
+  document.getElementById('content').innerHTML = renewalHTML + cardsHTML;
+
+  // Re-attach expand listeners
+  document.querySelectorAll('.perk-card').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target.classList.contains('btn-used')) return;
+      const id = el.dataset.id;
+      expandedId = expandedId === id ? null : id;
+      render();
+    });
+  });
+}
+
+function perkCard(p) {
+  const isExpanded = expandedId === p.id;
+  const reminderDate = new Date(p.resetDate);
+  reminderDate.setDate(reminderDate.getDate() - 7);
+
+  return `
+    <div class="perk-card ${p.urg === 'urgent' ? 'urgent' : ''} ${p.isUsed ? 'used' : ''} ${isExpanded ? 'expanded' : ''}" data-id="${p.id}">
+      <div class="perk-main">
+        <div class="perk-row1">
+          <div class="perk-icon">${p.icon}</div>
+          <div class="perk-info">
+            <div class="perk-name">${p.name}</div>
+            <div class="perk-value">${p.value}</div>
+            <div class="perk-badges">
+              <span class="badge badge-${p.cycle}">${p.cycle}</span>
+              <span class="badge badge-category">${p.category}</span>
+            </div>
+          </div>
+          <div class="perk-right">
+            <div class="days-left ${p.urg}">${p.isUsed ? '✓ used' : p.days + 'd left'}</div>
+            <div class="reset-date">resets ${fmtDate(p.resetDate)}</div>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-fill ${p.urg}" style="width:${p.pct}%"></div>
+        </div>
+      </div>
+
+      <div class="perk-detail">
+        <div class="detail-desc">${p.desc}</div>
+        <div class="tip-box">
+          <span>💡 PRO TIP</span>
+          <p>${p.tip}</p>
+        </div>
+        <div class="detail-footer">
+          <div class="reminder-info">📅 Cal reminder: ${fmtDate(reminderDate)}</div>
+          <button class="btn-used ${p.isUsed ? 'is-used' : ''}" onclick="toggleUsed('${p.id}')">
+            ${p.isUsed ? '↩ Mark unused' : '✓ Mark used'}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function setFilter(cat) {
+  activeFilter = cat;
+  expandedId = null;
+  render();
+}
+
+// ─────────────────────────────────────────
+// INSTALL PROMPT (iOS)
+// ─────────────────────────────────────────
+function checkInstallPrompt() {
+  const dismissed = localStorage.getItem('csr_toast_dismissed');
+  const isInstalled = window.navigator.standalone === true;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+  if (!dismissed && !isInstalled && isIOS) {
+    setTimeout(() => {
+      document.getElementById('installToast').classList.remove('hidden');
+    }, 2000);
+  }
+}
+
+document.getElementById('toastDismiss').addEventListener('click', () => {
+  document.getElementById('installToast').classList.add('hidden');
+  localStorage.setItem('csr_toast_dismissed', '1');
+});
+
+// ─────────────────────────────────────────
+// AUTO-REFRESH midnight
+// ─────────────────────────────────────────
+function scheduleMidnightRefresh() {
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0);
+  const ms = midnight - now;
+  setTimeout(() => { render(); scheduleMidnightRefresh(); }, ms);
+}
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+render();
+checkInstallPrompt();
+scheduleMidnightRefresh();
+</script>
+</body>
+</html>
